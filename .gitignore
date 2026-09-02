@@ -1,0 +1,23 @@
+# Binaries
+http-echo
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Coverage
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
