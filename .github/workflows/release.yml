@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+          - goos: windows
+            goarch: arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          binary=http-echo
+          [ "$GOOS" = "windows" ] && binary=http-echo.exe
+          go build -trimpath -o "$binary" .
+          tar -czf "http-echo-${GOOS}-${GOARCH}.tar.gz" "$binary"
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: http-echo-*.tar.gz
