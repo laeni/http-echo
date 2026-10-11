@@ -1,5 +1,6 @@
 # Binaries
 http-echo
+bin/
 *.exe
 *.exe~
 *.dll

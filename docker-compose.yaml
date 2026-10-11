@@ -1,0 +1,20 @@
+# http-echo 运行配置，镜像来自 ccr.ccs.tencentyun.com/laeni/http-echo。
+#
+#   docker compose up -d    启动
+#   docker compose logs -f  查看请求与响应输出
+#   docker compose pull     镜像更新后重新拉取
+#
+# 镜像名与标签可用环境变量覆盖，例如 TAG=v1.1.0 docker compose up -d。
+
+services:
+  http-echo:
+    image: ${REGISTRY:-ccr.ccs.tencentyun.com/laeni}/http-echo:${TAG:-latest}
+    container_name: http-echo
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

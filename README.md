@@ -7,8 +7,50 @@
 ## 安装
 
 ```bash
-go build -o http-echo .
+make build
 ```
+
+产物为 `bin/http-echo`。`make help` 列出全部目标，常用的还有 `make test`、`make vet`、`make fmt`。
+
+## 镜像
+
+镜像推送到 `ccr.ccs.tencentyun.com/laeni/http-echo`。
+
+```bash
+make docker-build   # 构建本机架构镜像并加载到本地 Docker
+make docker-push    # 构建 linux/amd64、linux/arm64 镜像并推送
+```
+
+推送使用 buildx，构建器不存在时自动创建。镜像标签取自仓库根目录的 `VERSION` 文件，另附 `latest` 标签。
+
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `REGISTRY` | `ccr.ccs.tencentyun.com/laeni` | 镜像仓库前缀 |
+| `IMAGE` | `http-echo` | 镜像名 |
+| `TAG` | `VERSION` 文件内容 | 镜像标签 |
+| `EXTRA_TAGS` | `latest` | 追加标签，置空则仅推送 `TAG` |
+| `PLATFORMS` | `linux/amd64,linux/arm64` | 推送目标平台 |
+| `BUILDER` | `multiarch` | buildx 构建器名称 |
+
+```bash
+make docker-push TAG=v1.2.0
+make docker-push IMG=harbor.example.com/library/http-echo TAG=dev EXTRA_TAGS=
+```
+
+运行镜像：
+
+```bash
+docker run --rm -p 8080:8080 ccr.ccs.tencentyun.com/laeni/http-echo:latest
+```
+
+或以 `docker-compose.yaml` 启动：
+
+```bash
+docker compose up -d
+docker compose logs -f
+```
+
+`docker-compose.yaml` 中的镜像名、标签和端口分别由 `REGISTRY`、`TAG`、`PORT` 环境变量控制，镜像更新后执行 `docker compose pull && docker compose up -d`。
 
 ## 用法
 
